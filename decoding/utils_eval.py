@@ -1,20 +1,21 @@
-import os
-import numpy as np
 import json
+import os
 
 import config
-from GPT import GPT
-from Decoder import Decoder, Hypothesis
-from LanguageModel import LanguageModel
-
-from jiwer import wer
-from datasets import load_metric
+import numpy as np
 from bert_score import BERTScorer
+from datasets import load_metric
+from Decoder import Decoder, Hypothesis
+from GPT import GPT
+from jiwer import wer
+from LanguageModel import LanguageModel
 
 BAD_WORDS_PERCEIVED_SPEECH = frozenset(["sentence_start", "sentence_end", "br", "lg", "ls", "ns", "sp"])
 BAD_WORDS_OTHER_TASKS = frozenset(["", "sp", "uh"])
 
 from utils_ridge.textgrid import TextGrid
+
+
 def load_transcript(experiment, task):
     if experiment in ["perceived_speech", "perceived_multispeaker"]: skip_words = BAD_WORDS_PERCEIVED_SPEECH
     else: skip_words = BAD_WORDS_OTHER_TASKS
@@ -80,9 +81,9 @@ class WER(object):
         scores = []
         for ref_seg, pred_seg in zip(ref, pred):
             if len(ref_seg) == 0 : error = 1.0
-            else: error = wer(ref_seg, pred_seg)
+            else: error = wer(' '.join(ref_seg), ' '.join(pred_seg))
             if self.use_score: scores.append(1 - error)
-            else: use_score.append(error)
+            else: scores.append(error)
         return np.array(scores)
     
 """
